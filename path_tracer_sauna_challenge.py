@@ -47,6 +47,33 @@ def get_adjacent_positions(rows: int, cols: int, position: Tuple[int, int]) -> L
     ]
 
 
+def walk_all_paths_non_recursive(matrix: List[List[str]], dict_map: Dict[Tuple[int, int], str], key: Tuple[int, int], visited: List[Tuple[int, int]],
+                   letters: List[str], full_path: List[str]) -> Union[str, Tuple[str, str]]:
+    stack = [(key, visited, letters, full_path)]
+
+    while stack:
+        position, visited, letters, full_path = stack.pop()
+        current_char = dict_map[position]
+        full_path.append(current_char)
+        visited.append(position)
+
+        if 'A' <= current_char <= 'Z':
+            letters.append(current_char)
+        if current_char == 'x':
+            return ''.join(letters), ''.join(full_path)
+
+        adjacent_positions = get_adjacent_positions(len(matrix), len(matrix[0]), position)
+        next_positions = [
+            pos for pos in adjacent_positions
+            if pos in dict_map and is_valid_next_character(current_char, dict_map[pos]) and pos not in visited
+        ]
+
+        for pos in next_positions:
+            stack.append((pos, visited[:], letters[:], full_path[:]))
+
+    return "Error"
+
+
 def walk_all_paths(matrix: List[List[str]], dict_map: Dict[Tuple[int, int], str], key: Tuple[int, int], visited: List[Tuple[int, int]],
                    letters: List[str], full_path: List[str]) -> Union[str, Tuple[str, str]]:
     """
